@@ -108,7 +108,23 @@ export default class HomeScreen extends Component {
     return true;
   }
 
+
   handleButton = async (id, statusParam) => {
+    //current position
+    navigator.geolocation.getCurrentPosition(
+      position => {
+        console.log("lat => "+position.coords.latitude)
+        console.log("lng => " + position.coords.longitude);
+        this.setState({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          error: null
+        });
+      },
+      error => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    );
+    //end current position
     const user_id = await AsyncStorage.getItem("user_id");
     console.log(id)
     // console.log('handle here')
@@ -134,6 +150,7 @@ export default class HomeScreen extends Component {
       console.log(resp);
       console.log(this.state.status.toString());
       // alert('Thanks to complete this destination')
+      // console.log(resp)
       if(statusParam==='complete'){
         Alert.alert(
           "Updating destination",
@@ -142,7 +159,7 @@ export default class HomeScreen extends Component {
             {
               text: "OK",
               onPress: () => {
-                this.handleTakeTrip(1);
+                this.handleTakeTrip(this.state.current_trip_id);
               }
             }
           ]
@@ -155,7 +172,7 @@ export default class HomeScreen extends Component {
             {
               text: "OK",
               onPress: () => {
-                this.handleTakeTrip(1);
+                this.handleTakeTrip(this.state.current_trip_id);
               }
             }
           ]
@@ -385,7 +402,7 @@ export default class HomeScreen extends Component {
 
     const loader = (
       <View style={styles.containerActivity}>
-        <ActivityIndicator size={100} style={styles.activityIndicator} color={'#fff'}/>
+        <ActivityIndicator size={100} style={styles.activityIndicator} color={'#fff'} animating={true}/>
       </View>
     );
 
